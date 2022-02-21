@@ -8,17 +8,27 @@ public class Game : MonoBehaviour
     public Camera cam;
     public State state;
 
-    public MenuButtons mainMenu;
-    public MenuButtons levelMenu;
-    public GameObject selectionBox;
+    public GameObject[] mainMenuItems;
+    public GameObject[] levelMenuItems;
+    public GameObject[] colorItems;
+    public GameObject colorKeys;
 
+    public SpriteRenderer mainScreen;
     public SpriteRenderer rightScreen;
+    public SpriteRenderer leftScreen;
+
+    public GameObject menuHighlight;
+    public GameObject colorHighlight;
+    public GameObject speedHighlight;
+
     public SpriteRenderer guideLine;
     public SpriteRenderer guideBox;
 
-    public TMP_Text startText;
-    public TMP_Text accuracyTitle;
-    public TMP_Text accuracyText;
+    public TMP_Text rightScreenTitle;
+    public TMP_Text rightScreenValue;
+    public TMP_Text speedTitle;
+    public TMP_Text speedValue;
+    public TMP_Text speedKey;
 
     public Textures textures;
 
@@ -64,18 +74,26 @@ public class Game : MonoBehaviour
         levelIndex = 0;
         lastScore = 0;
 
-        mainMenu.gameObject.SetActive(false);
-        levelMenu.gameObject.SetActive(false);
-        selectionBox.SetActive(false);
+        ObjectsActive(mainMenuItems, false);
+        ObjectsActive(levelMenuItems, false);
+        ObjectsActive(colorItems, false);
+        colorKeys.SetActive(false);
 
-        rightScreen.enabled = true;
+        menuHighlight.SetActive(false);
+        colorHighlight.SetActive(false);
+        speedHighlight.SetActive(false);
+
+        rightScreen.enabled = false;
+        leftScreen.enabled = false;
 
         guideLine.enabled = false;
         guideBox.enabled = false;
 
-        startText.alpha = 0f;
-        accuracyTitle.alpha = 0f;
-        accuracyText.alpha = 0f;
+        rightScreenTitle.alpha = 0f;
+        rightScreenValue.alpha = 0f;
+        speedTitle.alpha = 0f;
+        speedValue.alpha = 0f;
+        speedKey.alpha = 0f;
 
         cam = Camera.main;
 
@@ -85,6 +103,12 @@ public class Game : MonoBehaviour
     void Update()
     {
         state.UpdateState();
+    }
+
+    public void ObjectsActive(GameObject[] array, bool state)
+    {
+        foreach (GameObject gameObject in array)
+            gameObject.SetActive(state);
     }
 
     public void SwitchToState(State newState)

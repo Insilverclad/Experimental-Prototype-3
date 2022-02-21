@@ -10,6 +10,8 @@ public class GameState : State
     private Cell[,] canvasGrid;
     private GameObject gridLineObject;
 
+    private Color[] imageColors;
+
     private Color[] paintColors;
     private int colorIndex;
 
@@ -30,6 +32,12 @@ public class GameState : State
 
     private bool running;
 
+    private float initializeTimer;
+    private float initializeDuration;
+    private int pixelsColored;
+
+    private bool initialized;
+
     public GameState(Game _game) : base(_game)
     {
 
@@ -40,15 +48,15 @@ public class GameState : State
         frameSize = new Vector2(16.0f, 16.0f);
 
         Texture2D texture = game.levels[game.levelIndex].texture;
+        imageColors = texture.GetPixels();
 
         referenceGrid = LoadImageGrid(texture);
-        PaintGrid(referenceGrid, texture.GetPixels());
+        PaintGrid(referenceGrid, new Color(1.0f, 1.0f, 1.0f, 1.0f));
 
         canvasGrid = LoadImageGrid(texture);
         PaintGrid(canvasGrid, new Color(1.0f, 1.0f, 1.0f, 0.35f));
 
         CreateGridLines(canvasGrid);
-        InitializeGuides(canvasGrid);
 
         paintColors = new Color[5];
         paintColors[0] = Color.white;
@@ -64,20 +72,35 @@ public class GameState : State
         timer = 0f;
         speed = 0f;
         baseSpeed = 6.0f;
-        boostSpeed = 20.0f * (texture.width / 16.0f) * 0.75f;
+        boostSpeed = 20.0f * (texture.width / 16.0f) * 0.5f + 10.0f;
 
-        coloredCellCount = CountColoredCells(referenceGrid);
         incorrectCells = 0;
         accuracy = 100;
+
+        game.rightScreenTitle.alpha = 1.0f;
+        game.rightScreenTitle.text = "Loading...";
+        game.rightScreenValue.alpha = 1.0f;
+        game.rightScreenValue.text = "";
+        game.speedTitle.alpha = 1f;
+        game.speedValue.alpha = 1f;
+        game.speedKey.alpha = 1f;
+
+        game.rightScreen.enabled = true;
+        game.leftScreen.enabled = true;
+
+        game.ObjectsActive(game.colorItems, true);
+        game.colorKeys.SetActive(true);
 
         gameOverTimer = 0f;
         gameOverDuration = 3.0f;
 
-        game.accuracyTitle.alpha = 1.0f;
-        game.accuracyText.alpha = 1.0f;
-        game.accuracyText.text = "100%";
+        running = false;
 
-        running = true;
+        initializeTimer = 0f;
+        initializeDuration = 3.0f;
+        pixelsColored = 0;
+
+        initialized = false;
     }
 
     public override void UpdateState()
@@ -88,86 +111,196 @@ public class GameState : State
             return;
         }
 
-        if (running)
+        if (!initialized)
         {
-            speed = Input.GetKey(KeyCode.LeftShift) == false ? baseSpeed : boostSpeed;
+            initializeTimer += Time.deltaTime;
 
-            colorIndex = 0;
+            int countDown = (int)(initializeDuration - initializeTimer) + 1;
+            game.rightScreenValue.text = countDown.ToString();
 
-            if (Input.GetKey(KeyCode.Q))
-                colorIndex = 1;
-            else if (Input.GetKey(KeyCode.W))
-                colorIndex = 2;
-            else if (Input.GetKey(KeyCode.E))
-                colorIndex = 3;
-            else if (Input.GetKey(KeyCode.R))
-                colorIndex = 4;
-
-            if (colorIndex != 0)
+            if (initializeTimer > 0.25f)
             {
-                canvasGrid[cellIndex.x, cellIndex.y].rend.color = paintColors[colorIndex];
-                hasColored = true;
+                float alpha = 3 * (Mathf.Sin((initializeTimer - 0.25f) * Mathf.PI * 2) + 1) / 2;
+                game.rightScreenValue.color = new Color(1.0f, 1.0f, 1.0f, alpha);
             }
 
-            timer += speed * Time.deltaTime;
-            if (timer >= 1.0f)
+            float imageT = Mathf.Clamp(initializeTimer / 2.0f, 0f, 1f);
+            int pixelsToColor = (int)(imageT * imageColors.Length);
+
+            if (pixelsColored < pixelsToColor)
             {
-                if (!hasColored)
-                    canvasGrid[cellIndex.x, cellIndex.y].rend.color = paintColors[0];
-                else
-                    hasColored = false;
-
-                if (canvasGrid[cellIndex.x, cellIndex.y].rend.color != referenceGrid[cellIndex.x, cellIndex.y].rend.color)
-                    incorrectCells += 1;
-
-                accuracy = ((coloredCellCount - incorrectCells) * 100) / coloredCellCount;
-                game.accuracyText.text = accuracy.ToString() + "%";
-
-                if (cellIndex.x < canvasGrid.GetLength(0) - 1)
+                while (pixelsColored < pixelsToColor)
                 {
-                    cellIndex.x += 1;
-                    game.guideBox.transform.position = new Vector3(
-                        canvasGrid[cellIndex.x, cellIndex.y].transform.position.x,
-                        canvasGrid[cellIndex.x, cellIndex.y].transform.position.y,
-                        -1);
-                }
-                else
-                {
-                    if (cellIndex.y > 0)
+                    referenceGrid[cellIndex.x, cellIndex.y].rend.color = imageColors[cellIndex.x + referenceGrid.GetLength(0) * cellIndex.y];
+                    pixelsColored += 1;
+
+                    if (cellIndex.x < referenceGrid.GetLength(0) - 1)
                     {
-                        cellIndex.x = 0;
-                        cellIndex.y -= 1;
-                        game.guideLine.transform.position = new Vector3(
-                            0,
-                            canvasGrid[cellIndex.x, cellIndex.y].transform.position.y,
-                            -1);
-
-                        game.guideBox.transform.position = new Vector3(
-                            canvasGrid[cellIndex.x, cellIndex.y].transform.position.x,
-                            canvasGrid[cellIndex.x, cellIndex.y].transform.position.y,
-                            -1);
+                        cellIndex.x += 1;
                     }
                     else
                     {
-                        running = false;
-                        game.guideLine.enabled = false;
-                        game.guideBox.enabled = false;
+                        if (cellIndex.y > 0)
+                        {
+                            cellIndex.x = 0;
+                            cellIndex.y -= 1;
+                        }
                     }
                 }
-                timer = 0f;
+            }
+
+            if (initializeTimer >= initializeDuration)
+            {
+                cellIndex = new Vector2Int(0, canvasGrid.GetLength(1) - 1);
+                coloredCellCount = CountColoredCells(referenceGrid);
+                pixelsColored = 0;
+                InitializeGuides(canvasGrid);
+
+                game.rightScreenTitle.alpha = 1.0f;
+                game.rightScreenTitle.text = "Accuracy:";
+                game.rightScreenValue.text = "100%";
+                game.rightScreenValue.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+                initialized = true;
+                running = true;
             }
         }
         else
         {
-            gameOverTimer += Time.deltaTime;
-            if (gameOverTimer >= gameOverDuration)
+            if (running)
             {
-                game.lastScore = accuracy;
-                game.SwitchToState(new MainMenuState(game));
-                return;
+                bool boosting = Input.GetKey(KeyCode.LeftShift);
+                if (boosting)
+                {
+                    speed = boostSpeed;
+                    game.speedValue.text = ">>>";
+                    game.speedHighlight.SetActive(true);
+                }
+                else
+                {
+                    speed = baseSpeed;
+                    game.speedValue.text = ">";
+                    game.speedHighlight.SetActive(false);
+                }
+
+                colorIndex = 0;
+
+                if (Input.GetKey(KeyCode.Q))
+                    colorIndex = 1;
+                else if (Input.GetKey(KeyCode.W))
+                    colorIndex = 2;
+                else if (Input.GetKey(KeyCode.E))
+                    colorIndex = 3;
+                else if (Input.GetKey(KeyCode.R))
+                    colorIndex = 4;
+
+                if (colorIndex > 0)
+                {
+                    canvasGrid[cellIndex.x, cellIndex.y].rend.color = paintColors[colorIndex];
+                    hasColored = true;
+
+                    Vector3 newPosition = game.colorHighlight.transform.position;
+                    newPosition.x = game.colorItems[colorIndex - 1].transform.position.x;
+                    game.colorHighlight.transform.position = newPosition;
+                    game.colorHighlight.SetActive(true);
+                }
+                else
+                {
+                    game.colorHighlight.SetActive(false);
+                }
+
+                timer += speed * Time.deltaTime;
+                if (timer >= 1.0f)
+                {
+                    if (!hasColored)
+                        canvasGrid[cellIndex.x, cellIndex.y].rend.color = paintColors[0];
+                    else
+                        hasColored = false;
+
+                    if (canvasGrid[cellIndex.x, cellIndex.y].rend.color != referenceGrid[cellIndex.x, cellIndex.y].rend.color)
+                        incorrectCells += 1;
+
+                    if (referenceGrid[cellIndex.x, cellIndex.y].rend.color != Color.white)
+                        pixelsColored += 1;
+
+                    accuracy = ((coloredCellCount - incorrectCells) * 100) / coloredCellCount;
+                    accuracy = Mathf.Clamp(accuracy, 0, 100);
+                    game.rightScreenValue.text = accuracy.ToString() + "%";
+
+                    if (accuracy == 0 || pixelsColored == coloredCellCount)
+                    {
+                        GameOver();
+                    }
+
+                    if (cellIndex.x < canvasGrid.GetLength(0) - 1)
+                    {
+                        cellIndex.x += 1;
+                        UpdateGuideBox();
+                    }
+                    else
+                    {
+                        if (cellIndex.y > 0)
+                        {
+                            cellIndex.x = 0;
+                            cellIndex.y -= 1;
+                            UpdateGuideLine();
+                            UpdateGuideBox();
+                        }
+                        else
+                        {
+                            GameOver();
+                        }
+                    }
+                    timer = 0f;
+                }
             }
-            game.accuracyText.alpha = (Mathf.Sin(Time.realtimeSinceStartup * 7.5f) + 1.0f) / 2.0f;
+            else
+            {
+                gameOverTimer += Time.deltaTime;
+                if (gameOverTimer >= gameOverDuration)
+                {
+                    game.lastScore = accuracy;
+                    game.SwitchToState(new LevelSelectState(game));
+                    return;
+                }
+                game.rightScreenValue.alpha = (Mathf.Sin(Time.realtimeSinceStartup * 7.5f) + 1.0f) / 2.0f;
+            }
         }
+    }
+
+    private void UpdateGuideBox()
+    {
+        game.guideBox.transform.position = new Vector3(
+            canvasGrid[cellIndex.x, cellIndex.y].transform.position.x,
+            canvasGrid[cellIndex.x, cellIndex.y].transform.position.y,
+            -1);
+    }
+
+    private void UpdateGuideLine()
+    {
+        game.guideLine.transform.position = new Vector3(
+            0,
+            canvasGrid[cellIndex.x, cellIndex.y].transform.position.y,
+            -1);
+    }
+
+    private void GameOver()
+    {
+        running = false;
+        game.guideLine.enabled = false;
+        game.guideBox.enabled = false;
+    }
+
+    private LineRenderer CreateGridLineObject(Material mat)
+    {
+        GameObject newLine = new GameObject("Line");
+
+        LineRenderer lineRend = newLine.AddComponent<LineRenderer>();
+        lineRend.material = mat;
+        lineRend.startWidth = 0.03f;
+        lineRend.endWidth = 0.03f;
+
+        return lineRend;
     }
 
     private void CreateGridLines(Cell[,] grid)
@@ -183,36 +316,26 @@ public class GameState : State
         Material lineMat = new Material(Shader.Find("Particles/Standard Unlit"));
         lineMat.SetColor("_Color", new Color(0.5f, 0.5f, 0.5f));
 
-        for (int x = 0; x < referenceGrid.GetLength(0) + 1; x++)
+        for (int x = 0; x < grid.GetLength(0) + 1; x++)
         {
-            GameObject newLine = new GameObject("Line X" + x.ToString());
-            newLine.transform.position = new Vector3(xStart + x * cellSize, yStart, 0);
-            newLine.transform.parent = gridLineObject.transform;
-
-            LineRenderer lineRend = newLine.AddComponent<LineRenderer>();
-            lineRend.material = lineMat;
-            lineRend.startWidth = 0.03f;
-            lineRend.endWidth = 0.03f;
+            LineRenderer lineRend = CreateGridLineObject(lineMat);
+            lineRend.transform.position = new Vector3(xStart + x * cellSize, yStart, 0);
+            lineRend.transform.parent = gridLineObject.transform;
 
             lineRend.positionCount = 2;
-            lineRend.SetPosition(0, newLine.transform.position);
-            lineRend.SetPosition(1, new Vector3(newLine.transform.position.x, newLine.transform.position.y + grid.GetLength(1) * cellSize, grid[0, 0].transform.position.z - 1));
+            lineRend.SetPosition(0, lineRend.transform.position);
+            lineRend.SetPosition(1, new Vector3(lineRend.transform.position.x, lineRend.transform.position.y + grid.GetLength(1) * cellSize, grid[0, 0].transform.position.z - 1));
         }
 
-        for (int y = 0; y < referenceGrid.GetLength(1) + 1; y++)
+        for (int y = 0; y < grid.GetLength(1) + 1; y++)
         {
-            GameObject newLine = new GameObject("Line Y" + y.ToString());
-            newLine.transform.position = new Vector3(xStart, yStart + y * cellSize, 0);
-            newLine.transform.parent = gridLineObject.transform;
-
-            LineRenderer lineRend = newLine.AddComponent<LineRenderer>();
-            lineRend.material = lineMat;
-            lineRend.startWidth = 0.03f;
-            lineRend.endWidth = 0.03f;
+            LineRenderer lineRend = CreateGridLineObject(lineMat);
+            lineRend.transform.position = new Vector3(xStart, yStart + y * cellSize, 0);
+            lineRend.transform.parent = gridLineObject.transform;
 
             lineRend.positionCount = 2;
-            lineRend.SetPosition(0, newLine.transform.position);
-            lineRend.SetPosition(1, new Vector3(newLine.transform.position.x + grid.GetLength(0) * cellSize, newLine.transform.position.y, grid[0, 0].transform.position.z - 1));
+            lineRend.SetPosition(0, lineRend.transform.position);
+            lineRend.SetPosition(1, new Vector3(lineRend.transform.position.x + grid.GetLength(0) * cellSize, lineRend.transform.position.y, grid[0, 0].transform.position.z - 1));
         }
     }
 
@@ -329,7 +452,18 @@ public class GameState : State
         game.guideLine.enabled = false;
         game.guideBox.enabled = false;
 
-        game.accuracyTitle.alpha = 0f;
-        game.accuracyText.alpha = 0f;
+        game.rightScreenTitle.alpha = 0f;
+        game.rightScreenValue.alpha = 0f;
+        game.speedTitle.alpha = 0f;
+        game.speedValue.alpha = 0f;
+        game.speedKey.alpha = 0f;
+
+        game.rightScreen.enabled = false;
+        game.leftScreen.enabled = false;
+
+        game.ObjectsActive(game.colorItems, false);
+        game.colorKeys.SetActive(false);
+        game.colorHighlight.SetActive(false);
+        game.speedHighlight.SetActive(false);
     }
 }

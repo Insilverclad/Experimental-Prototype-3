@@ -12,8 +12,8 @@ public class LevelSelectState : State
 
     public override void OnStart()
     {
-        game.levelMenu.gameObject.SetActive(true);
-        game.selectionBox.SetActive(true);
+        game.ObjectsActive(game.levelMenuItems, true);
+        game.menuHighlight.SetActive(true);
 
         index = game.levelIndex;
     }
@@ -25,20 +25,20 @@ public class LevelSelectState : State
             if (index > 0)
                 index -= 1;
             else
-                index = game.levelMenu.buttons.Length - 1;
+                index = game.levelMenuItems.Length - 1;
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            if (index < game.levelMenu.buttons.Length - 1)
+            if (index < game.levelMenuItems.Length - 1)
                 index += 1;
             else
                 index = 0;
         }
             
 
-        Vector3 oldPosition = game.selectionBox.transform.position;
-        Vector3 newPosition = game.levelMenu.buttons[index].transform.position;
-        game.selectionBox.transform.position = new Vector3(newPosition.x, newPosition.y, oldPosition.z);
+        Vector3 oldPosition = game.menuHighlight.transform.position;
+        Vector3 newPosition = game.levelMenuItems[index].transform.position;
+        game.menuHighlight.transform.position = new Vector3(newPosition.x, newPosition.y, oldPosition.z);
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -48,7 +48,7 @@ public class LevelSelectState : State
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            if (index == game.levelMenu.buttons.Length - 1)
+            if (index == game.levelMenuItems.Length - 1)
             {
                 game.SwitchToState(new MainMenuState(game));
                 return;
@@ -64,7 +64,7 @@ public class LevelSelectState : State
 
     public override void OnExit()
     {
-        game.levelMenu.gameObject.SetActive(false);
-        game.selectionBox.SetActive(false);
+        game.ObjectsActive(game.levelMenuItems, false);
+        game.menuHighlight.SetActive(false);
     }
 }
