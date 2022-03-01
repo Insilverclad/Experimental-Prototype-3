@@ -5,7 +5,9 @@ using TMPro;
 
 public class Game : MonoBehaviour
 {
-    public Camera cam;
+    [HideInInspector] public Camera cam;
+    [HideInInspector] public AudioSource audioSource;
+
     public State state;
 
     public GameObject[] mainMenuItems;
@@ -31,6 +33,7 @@ public class Game : MonoBehaviour
     public TMP_Text speedKey;
 
     public Textures textures;
+    public Sounds sounds;
 
     public Level[] levels;
     public int levelIndex;
@@ -55,6 +58,11 @@ public class Game : MonoBehaviour
             diamond32 = Resources.Load<Texture2D>("Sprites/diamond_32"),
 
             square = Resources.Load<Sprite>("Sprites/square")
+        };
+
+        sounds = new Sounds
+        {
+            menuSelect = Resources.Load<AudioClip>("Sounds/menu_select")
         };
 
         levels = new Level[9];
@@ -96,6 +104,7 @@ public class Game : MonoBehaviour
         speedKey.alpha = 0f;
 
         cam = Camera.main;
+        audioSource = GetComponent<AudioSource>();
 
         SwitchToState(new StartState(this));
     }

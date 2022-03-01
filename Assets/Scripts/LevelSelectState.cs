@@ -26,6 +26,8 @@ public class LevelSelectState : State
                 index -= 1;
             else
                 index = game.levelMenuItems.Length - 1;
+
+            game.audioSource.PlayOneShot(game.sounds.menuSelect);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
@@ -33,6 +35,8 @@ public class LevelSelectState : State
                 index += 1;
             else
                 index = 0;
+
+            game.audioSource.PlayOneShot(game.sounds.menuSelect);
         }
             
 
