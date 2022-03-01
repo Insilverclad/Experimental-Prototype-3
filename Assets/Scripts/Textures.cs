@@ -13,6 +13,11 @@ public class Textures
     public Texture2D cat32;
     public Texture2D dog32;
     public Texture2D diamond32;
+    public Texture2D bear32;
+    public Texture2D frog32;
+    public Texture2D pot32;
+    public Texture2D coffee32;
+    public Texture2D triforce32;
 
     public Sprite square;
 }

@@ -107,6 +107,7 @@ public class GameState : State
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            game.audioSource.Stop();
             game.SwitchToState(new LevelSelectState(game));
             return;
         }
@@ -163,6 +164,9 @@ public class GameState : State
 
                 initialized = true;
                 running = true;
+                game.audioSource.clip = game.sounds.gameMusic;
+                game.audioSource.loop = true;
+                game.audioSource.Play();
             }
         }
         else
@@ -289,6 +293,7 @@ public class GameState : State
         running = false;
         game.guideLine.enabled = false;
         game.guideBox.enabled = false;
+        game.audioSource.Stop();
     }
 
     private LineRenderer CreateGridLineObject(Material mat)

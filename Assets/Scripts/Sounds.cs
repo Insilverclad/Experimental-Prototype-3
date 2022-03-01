@@ -5,4 +5,5 @@ using UnityEngine;
 public class Sounds
 {
     public AudioClip menuSelect;
+    public AudioClip gameMusic;
 }
