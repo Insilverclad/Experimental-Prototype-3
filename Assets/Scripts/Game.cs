@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Game : MonoBehaviour
@@ -36,7 +37,7 @@ public class Game : MonoBehaviour
     public TMP_Text speedValue;
     public TMP_Text speedKey;
 
-    public Textures textures;
+    public Sprites textures;
     public Sounds sounds;
 
     public Level[] levels;
@@ -49,26 +50,26 @@ public class Game : MonoBehaviour
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
 
-        textures = new Textures
+        textures = new Sprites
         {
-            star16 = Resources.Load<Texture2D>("Sprites/star_16"),
-            star32 = Resources.Load<Texture2D>("Sprites/star_32"),
-            heart16 = Resources.Load<Texture2D>("Sprites/heart_16"),
-            heart32 = Resources.Load<Texture2D>("Sprites/heart_32"),
-            yinyang16 = Resources.Load<Texture2D>("Sprites/yin_yang_16"),
-            yinyang32 = Resources.Load<Texture2D>("Sprites/yin_yang_32"),
-            cat32 = Resources.Load<Texture2D>("Sprites/cat_32"),
-            dog32 = Resources.Load<Texture2D>("Sprites/dog_32"),
-            diamond32 = Resources.Load<Texture2D>("Sprites/diamond_32"),
-            bear32 = Resources.Load<Texture2D>("Sprites/bear_32"),
-            frog32 = Resources.Load<Texture2D>("Sprites/frog_32"),
-            pot32 = Resources.Load<Texture2D>("Sprites/pot_32"),
-            coffee32 = Resources.Load<Texture2D>("Sprites/coffee_32"),
-            triforce32 = Resources.Load<Texture2D>("Sprites/triforce_32"),
-            monalisa32 = Resources.Load<Texture2D>("Sprites/monalisa_32"),
-            balloon32 = Resources.Load<Texture2D>("Sprites/balloon_32"),
-            drop32 = Resources.Load<Texture2D>("Sprites/drop_32"),
-            icecream32 = Resources.Load<Texture2D>("Sprites/icecream_32"),
+            star16 = Resources.Load<Sprite>("Sprites/star_16"),
+            star32 = Resources.Load<Sprite>("Sprites/star_32"),
+            heart16 = Resources.Load<Sprite>("Sprites/heart_16"),
+            heart32 = Resources.Load<Sprite>("Sprites/heart_32"),
+            yinyang16 = Resources.Load<Sprite>("Sprites/yin_yang_16"),
+            yinyang32 = Resources.Load<Sprite>("Sprites/yin_yang_32"),
+            cat32 = Resources.Load<Sprite>("Sprites/cat_32"),
+            dog32 = Resources.Load<Sprite>("Sprites/dog_32"),
+            diamond32 = Resources.Load<Sprite>("Sprites/diamond_32"),
+            bear32 = Resources.Load<Sprite>("Sprites/bear_32"),
+            frog32 = Resources.Load<Sprite>("Sprites/frog_32"),
+            pot32 = Resources.Load<Sprite>("Sprites/pot_32"),
+            coffee32 = Resources.Load<Sprite>("Sprites/coffee_32"),
+            triforce32 = Resources.Load<Sprite>("Sprites/triforce_32"),
+            monalisa32 = Resources.Load<Sprite>("Sprites/monalisa_32"),
+            balloon32 = Resources.Load<Sprite>("Sprites/balloon_32"),
+            drop32 = Resources.Load<Sprite>("Sprites/drop_32"),
+            icecream32 = Resources.Load<Sprite>("Sprites/icecream_32"),
 
             square = Resources.Load<Sprite>("Sprites/square")
         };
@@ -87,22 +88,22 @@ public class Game : MonoBehaviour
         for (int i = 0; i < levels.Length; i++)
             levels[i] = new Level();
 
-        levels[0].texture = textures.heart16;
-        levels[1].texture = textures.star16;
-        levels[2].texture = textures.yinyang16;
-        levels[3].texture = textures.heart32;
-        levels[4].texture = textures.star32;
-        levels[5].texture = textures.yinyang32;
-        levels[6].texture = textures.balloon32;
-        levels[7].texture = textures.drop32;
-        levels[8].texture = textures.bear32;
-        levels[9].texture = textures.coffee32;
-        levels[10].texture = textures.cat32;
-        levels[11].texture = textures.dog32;
-        levels[12].texture = textures.triforce32;
-        levels[13].texture = textures.pot32;
-        levels[14].texture = textures.frog32;
-        levels[15].texture = textures.monalisa32;
+        levels[0].sprite = textures.heart16;
+        levels[1].sprite = textures.star16;
+        levels[2].sprite = textures.yinyang16;
+        levels[3].sprite = textures.heart32;
+        levels[4].sprite = textures.star32;
+        levels[5].sprite = textures.yinyang32;
+        levels[6].sprite = textures.balloon32;
+        levels[7].sprite = textures.drop32;
+        levels[8].sprite = textures.bear32;
+        levels[9].sprite = textures.coffee32;
+        levels[10].sprite = textures.cat32;
+        levels[11].sprite = textures.dog32;
+        levels[12].sprite = textures.triforce32;
+        levels[13].sprite = textures.pot32;
+        levels[14].sprite = textures.frog32;
+        levels[15].sprite = textures.monalisa32;
 
         levelIndex = 0;
         lastScore = 0;
@@ -169,14 +170,18 @@ public class Game : MonoBehaviour
     {
         levelMenuItems = new GameObject[2, 9];
         Vector2Int index = new Vector2Int(0, 0);
+        int levelIndex = 0;
 
         foreach (GameObject column in levelItemColumns)
         {
             foreach (Transform child in column.transform)
             {
+                child.gameObject.GetComponent<TMP_Text>().text = "Level " + (levelIndex + 1).ToString();
+                child.GetComponentInChildren<Image>().sprite = levels[levelIndex].sprite;
                 levelMenuItems[index.x, index.y] = child.gameObject;
 
                 index.y += 1;
+                levelIndex += 1;
             }
             levelMenuItems[index.x, index.y] = levelMenuQuit;
 

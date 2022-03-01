@@ -47,7 +47,7 @@ public class GameState : State
     {
         frameSize = new Vector2(16.0f, 16.0f);
 
-        Texture2D texture = game.levels[game.levelIndex].texture;
+        Texture2D texture = game.levels[game.levelIndex].sprite.texture;
         imageColors = texture.GetPixels();
 
         referenceGrid = LoadImageGrid(texture);
@@ -264,9 +264,9 @@ public class GameState : State
             }
             else
             {
-                gameOverTimer += Time.deltaTime;
-                if (gameOverTimer >= gameOverDuration)
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
                 {
+                    game.audioSource.Stop();
                     game.lastScore = accuracy;
                     game.SwitchToState(new LevelSelectState(game));
                     return;

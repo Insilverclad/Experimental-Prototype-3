@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Level
 {
-    public Texture2D texture;
+    public Sprite sprite;
 }
