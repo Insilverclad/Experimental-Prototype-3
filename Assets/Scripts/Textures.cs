@@ -19,6 +19,9 @@ public class Textures
     public Texture2D coffee32;
     public Texture2D triforce32;
     public Texture2D monalisa32;
+    public Texture2D balloon32;
+    public Texture2D drop32;
+    public Texture2D icecream32;
 
     public Sprite square;
 }

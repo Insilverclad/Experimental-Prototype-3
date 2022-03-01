@@ -66,6 +66,9 @@ public class Game : MonoBehaviour
             coffee32 = Resources.Load<Texture2D>("Sprites/coffee_32"),
             triforce32 = Resources.Load<Texture2D>("Sprites/triforce_32"),
             monalisa32 = Resources.Load<Texture2D>("Sprites/monalisa_32"),
+            balloon32 = Resources.Load<Texture2D>("Sprites/balloon_32"),
+            drop32 = Resources.Load<Texture2D>("Sprites/drop_32"),
+            icecream32 = Resources.Load<Texture2D>("Sprites/icecream_32"),
 
             square = Resources.Load<Sprite>("Sprites/square")
         };
@@ -87,15 +90,15 @@ public class Game : MonoBehaviour
         levels[3].texture = textures.heart32;
         levels[4].texture = textures.star32;
         levels[5].texture = textures.yinyang32;
-        levels[6].texture = textures.bear32;
-        levels[7].texture = textures.coffee32;
-        levels[8].texture = textures.cat32;
-        levels[9].texture = textures.dog32;
-        levels[10].texture = textures.triforce32;
-        levels[11].texture = textures.pot32;
-        levels[12].texture = textures.frog32;
-        levels[13].texture = textures.diamond32;
-        levels[14].texture = textures.heart32;
+        levels[6].texture = textures.balloon32;
+        levels[7].texture = textures.drop32;
+        levels[8].texture = textures.bear32;
+        levels[9].texture = textures.coffee32;
+        levels[10].texture = textures.cat32;
+        levels[11].texture = textures.dog32;
+        levels[12].texture = textures.triforce32;
+        levels[13].texture = textures.pot32;
+        levels[14].texture = textures.frog32;
         levels[15].texture = textures.monalisa32;
 
         levelIndex = 0;
