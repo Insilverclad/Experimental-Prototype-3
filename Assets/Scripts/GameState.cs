@@ -101,6 +101,9 @@ public class GameState : State
         pixelsColored = 0;
 
         initialized = false;
+        game.audioSource.clip = game.sounds.imageLoading;
+        game.audioSource.loop = true;
+        game.audioSource.Play();
     }
 
     public override void UpdateState()
@@ -149,6 +152,8 @@ public class GameState : State
                     }
                 }
             }
+            if (pixelsColored == imageColors.Length && game.audioSource.isPlaying)
+                game.audioSource.Stop();
 
             if (initializeTimer >= initializeDuration)
             {
@@ -165,7 +170,6 @@ public class GameState : State
                 initialized = true;
                 running = true;
                 game.audioSource.clip = game.sounds.gameMusic;
-                game.audioSource.loop = true;
                 game.audioSource.Play();
             }
         }
@@ -290,10 +294,23 @@ public class GameState : State
 
     private void GameOver()
     {
+        game.audioSource.Stop();
+        game.audioSource.loop = false;
+
+        if (accuracy == 0)
+        {
+            game.audioSource.clip = game.sounds.levelFailed;
+        }
+        else
+        {
+            game.audioSource.clip = game.sounds.levelComplete;
+        }
+
+        game.audioSource.Play();
+
         running = false;
         game.guideLine.enabled = false;
         game.guideBox.enabled = false;
-        game.audioSource.Stop();
     }
 
     private LineRenderer CreateGridLineObject(Material mat)

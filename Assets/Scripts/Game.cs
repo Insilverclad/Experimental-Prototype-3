@@ -77,7 +77,10 @@ public class Game : MonoBehaviour
         {
             menuNavigate = Resources.Load<AudioClip>("Sounds/menu_navigate"),
             menuSelect = Resources.Load<AudioClip>("Sounds/menu_select"),
-            gameMusic = Resources.Load<AudioClip>("Sounds/game_music")
+            gameMusic = Resources.Load<AudioClip>("Sounds/game_music"),
+            imageLoading = Resources.Load<AudioClip>("Sounds/image_loading"),
+            levelComplete = Resources.Load<AudioClip>("Sounds/level_complete"),
+            levelFailed = Resources.Load<AudioClip>("Sounds/level_failed")
         };
 
         levels = new Level[16];
