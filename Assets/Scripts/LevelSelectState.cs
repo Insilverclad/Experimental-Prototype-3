@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LevelSelectState : State
 {
-    int index;
+    Vector2Int index;
     public LevelSelectState(Game _game) : base(_game)
     {
 
@@ -15,33 +15,51 @@ public class LevelSelectState : State
         game.ObjectsActive(game.levelMenuItems, true);
         game.menuHighlight.SetActive(true);
 
-        index = game.levelIndex;
+        index = new Vector2Int(game.levelIndex / (game.levelMenuItems.GetLength(1) - 1), game.levelIndex % (game.levelMenuItems.GetLength(1) - 1));
     }
 
     public override void UpdateState()
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
-            if (index > 0)
-                index -= 1;
+            if (index.y > 0)
+                index.y -= 1;
             else
-                index = game.levelMenuItems.Length - 1;
+                index.y = game.levelMenuItems.GetLength(1) - 1;
 
             game.audioSource.PlayOneShot(game.sounds.menuSelect);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            if (index < game.levelMenuItems.Length - 1)
-                index += 1;
+            if (index.y < game.levelMenuItems.GetLength(1) - 1)
+                index.y += 1;
             else
-                index = 0;
+                index.y = 0;
 
             game.audioSource.PlayOneShot(game.sounds.menuSelect);
         }
-            
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (index.x > 0)
+                index.x -= 1;
+            else
+                index.x = game.levelMenuItems.GetLength(0) - 1;
+
+            game.audioSource.PlayOneShot(game.sounds.menuSelect);
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            if (index.x < game.levelMenuItems.GetLength(0) - 1)
+                index.x += 1;
+            else
+                index.x = 0;
+
+            game.audioSource.PlayOneShot(game.sounds.menuSelect);
+        }
+
 
         Vector3 oldPosition = game.menuHighlight.transform.position;
-        Vector3 newPosition = game.levelMenuItems[index].transform.position;
+        Vector3 newPosition = game.levelMenuItems[index.x, index.y].transform.position;
         game.menuHighlight.transform.position = new Vector3(newPosition.x, newPosition.y, oldPosition.z);
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -52,14 +70,14 @@ public class LevelSelectState : State
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            if (index == game.levelMenuItems.Length - 1)
+            if (index.y == game.levelMenuItems.GetLength(1) - 1)
             {
                 game.SwitchToState(new MainMenuState(game));
                 return;
             }
             else
             {
-                game.levelIndex = index;
+                game.levelIndex = index.x * (game.levelMenuItems.GetLength(1) - 1) + index.y % (game.levelMenuItems.GetLength(1) - 1);
                 game.SwitchToState(new GameState(game));
                 return;
             }

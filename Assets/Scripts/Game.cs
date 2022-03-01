@@ -11,7 +11,11 @@ public class Game : MonoBehaviour
     public State state;
 
     public GameObject[] mainMenuItems;
-    public GameObject[] levelMenuItems;
+    public GameObject[,] levelMenuItems;
+    
+    public GameObject[] levelItemColumns;
+    public GameObject levelMenuQuit;
+
     public GameObject[] colorItems;
     public GameObject colorKeys;
 
@@ -65,7 +69,7 @@ public class Game : MonoBehaviour
             menuSelect = Resources.Load<AudioClip>("Sounds/menu_select")
         };
 
-        levels = new Level[9];
+        levels = new Level[16];
         for (int i = 0; i < levels.Length; i++)
             levels[i] = new Level();
 
@@ -78,9 +82,18 @@ public class Game : MonoBehaviour
         levels[6].texture = textures.diamond32;
         levels[7].texture = textures.cat32;
         levels[8].texture = textures.dog32;
+        levels[9].texture = textures.heart16;
+        levels[10].texture = textures.star16;
+        levels[11].texture = textures.yinyang16;
+        levels[12].texture = textures.heart32;
+        levels[13].texture = textures.star32;
+        levels[14].texture = textures.yinyang32;
+        levels[15].texture = textures.diamond32;
 
         levelIndex = 0;
         lastScore = 0;
+
+        LoadLevelSelectItems();
 
         ObjectsActive(mainMenuItems, false);
         ObjectsActive(levelMenuItems, false);
@@ -120,6 +133,12 @@ public class Game : MonoBehaviour
             gameObject.SetActive(state);
     }
 
+    public void ObjectsActive(GameObject[,] array, bool state)
+    {
+        foreach (GameObject gameObject in array)
+            gameObject.SetActive(state);
+    }
+
     public void SwitchToState(State newState)
     {
         if (state != null)
@@ -130,5 +149,25 @@ public class Game : MonoBehaviour
 
         state = newState;
         state.OnStart();
+    }
+
+    private void LoadLevelSelectItems()
+    {
+        levelMenuItems = new GameObject[2, 9];
+        Vector2Int index = new Vector2Int(0, 0);
+
+        foreach (GameObject column in levelItemColumns)
+        {
+            foreach (Transform child in column.transform)
+            {
+                levelMenuItems[index.x, index.y] = child.gameObject;
+
+                index.y += 1;
+            }
+            levelMenuItems[index.x, index.y] = levelMenuQuit;
+
+            index.x += 1;
+            index.y = 0;
+        }
     }
 }
