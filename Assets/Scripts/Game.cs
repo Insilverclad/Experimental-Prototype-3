@@ -65,12 +65,14 @@ public class Game : MonoBehaviour
             pot32 = Resources.Load<Texture2D>("Sprites/pot_32"),
             coffee32 = Resources.Load<Texture2D>("Sprites/coffee_32"),
             triforce32 = Resources.Load<Texture2D>("Sprites/triforce_32"),
+            monalisa32 = Resources.Load<Texture2D>("Sprites/monalisa_32"),
 
             square = Resources.Load<Sprite>("Sprites/square")
         };
 
         sounds = new Sounds
         {
+            menuNavigate = Resources.Load<AudioClip>("Sounds/menu_navigate"),
             menuSelect = Resources.Load<AudioClip>("Sounds/menu_select"),
             gameMusic = Resources.Load<AudioClip>("Sounds/game_music")
         };
@@ -94,9 +96,7 @@ public class Game : MonoBehaviour
         levels[12].texture = textures.frog32;
         levels[13].texture = textures.diamond32;
         levels[14].texture = textures.heart32;
-        levels[15].texture = textures.star32;
-        
-        
+        levels[15].texture = textures.monalisa32;
 
         levelIndex = 0;
         lastScore = 0;

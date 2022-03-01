@@ -18,6 +18,7 @@ public class Textures
     public Texture2D pot32;
     public Texture2D coffee32;
     public Texture2D triforce32;
+    public Texture2D monalisa32;
 
     public Sprite square;
 }

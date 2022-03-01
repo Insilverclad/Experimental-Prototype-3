@@ -27,7 +27,7 @@ public class MainMenuState : State
             else
                 index = game.mainMenuItems.Length - 1;
 
-            game.audioSource.PlayOneShot(game.sounds.menuSelect);
+            game.audioSource.PlayOneShot(game.sounds.menuNavigate);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
@@ -36,7 +36,7 @@ public class MainMenuState : State
             else
                 index = 0;
 
-            game.audioSource.PlayOneShot(game.sounds.menuSelect);
+            game.audioSource.PlayOneShot(game.sounds.menuNavigate);
         }
 
         Vector3 oldPosition = game.menuHighlight.transform.position;
@@ -48,6 +48,7 @@ public class MainMenuState : State
             if (index == 0)
             {
                 game.levelIndex = 0;
+                game.audioSource.PlayOneShot(game.sounds.menuSelect);
                 game.SwitchToState(new LevelSelectState(game));
                 return;
             }
