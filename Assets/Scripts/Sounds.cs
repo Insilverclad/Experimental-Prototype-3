@@ -10,4 +10,5 @@ public class Sounds
     public AudioClip imageLoading;
     public AudioClip levelComplete;
     public AudioClip levelFailed;
+    public AudioClip colorPress;
 }

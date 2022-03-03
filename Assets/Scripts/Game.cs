@@ -7,7 +7,8 @@ using TMPro;
 public class Game : MonoBehaviour
 {
     [HideInInspector] public Camera cam;
-    [HideInInspector] public AudioSource audioSource;
+    [HideInInspector] public AudioSource mainAudioSource;
+    [HideInInspector] public AudioSource secondAudioSource;
 
     public State state;
 
@@ -81,7 +82,8 @@ public class Game : MonoBehaviour
             gameMusic = Resources.Load<AudioClip>("Sounds/game_music"),
             imageLoading = Resources.Load<AudioClip>("Sounds/image_loading"),
             levelComplete = Resources.Load<AudioClip>("Sounds/level_complete"),
-            levelFailed = Resources.Load<AudioClip>("Sounds/level_failed")
+            levelFailed = Resources.Load<AudioClip>("Sounds/level_failed"),
+            colorPress = Resources.Load<AudioClip>("Sounds/color_press")
         };
 
         levels = new Level[16];
@@ -132,7 +134,10 @@ public class Game : MonoBehaviour
         speedKey.alpha = 0f;
 
         cam = Camera.main;
-        audioSource = GetComponent<AudioSource>();
+        mainAudioSource = gameObject.AddComponent<AudioSource>();
+        secondAudioSource = gameObject.AddComponent<AudioSource>();
+        mainAudioSource.playOnAwake = false;
+        secondAudioSource.playOnAwake = false;
 
         SwitchToState(new StartState(this));
     }

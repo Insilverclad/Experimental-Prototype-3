@@ -27,7 +27,7 @@ public class LevelSelectState : State
             else
                 index.y = game.levelMenuItems.GetLength(1) - 1;
 
-            game.audioSource.PlayOneShot(game.sounds.menuNavigate);
+            game.mainAudioSource.PlayOneShot(game.sounds.menuNavigate);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
@@ -36,7 +36,7 @@ public class LevelSelectState : State
             else
                 index.y = 0;
 
-            game.audioSource.PlayOneShot(game.sounds.menuNavigate);
+            game.mainAudioSource.PlayOneShot(game.sounds.menuNavigate);
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
@@ -45,7 +45,7 @@ public class LevelSelectState : State
             else
                 index.x = game.levelMenuItems.GetLength(0) - 1;
 
-            game.audioSource.PlayOneShot(game.sounds.menuNavigate);
+            game.mainAudioSource.PlayOneShot(game.sounds.menuNavigate);
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
@@ -54,7 +54,7 @@ public class LevelSelectState : State
             else
                 index.x = 0;
 
-            game.audioSource.PlayOneShot(game.sounds.menuNavigate);
+            game.mainAudioSource.PlayOneShot(game.sounds.menuNavigate);
         }
 
 
@@ -70,7 +70,7 @@ public class LevelSelectState : State
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            game.audioSource.PlayOneShot(game.sounds.menuSelect);
+            game.mainAudioSource.PlayOneShot(game.sounds.menuSelect);
             if (index.y == game.levelMenuItems.GetLength(1) - 1)
             {
                 game.SwitchToState(new MainMenuState(game));

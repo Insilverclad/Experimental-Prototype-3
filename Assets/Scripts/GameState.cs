@@ -101,16 +101,18 @@ public class GameState : State
         pixelsColored = 0;
 
         initialized = false;
-        game.audioSource.clip = game.sounds.imageLoading;
-        game.audioSource.loop = true;
-        game.audioSource.Play();
+        game.mainAudioSource.clip = game.sounds.imageLoading;
+        game.mainAudioSource.loop = true;
+        game.mainAudioSource.Play();
+        game.secondAudioSource.clip = game.sounds.colorPress;
+        game.secondAudioSource.loop = true;
     }
 
     public override void UpdateState()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            game.audioSource.Stop();
+            game.mainAudioSource.Stop();
             game.SwitchToState(new LevelSelectState(game));
             return;
         }
@@ -152,8 +154,8 @@ public class GameState : State
                     }
                 }
             }
-            if (pixelsColored == imageColors.Length && game.audioSource.isPlaying)
-                game.audioSource.Stop();
+            if (pixelsColored == imageColors.Length && game.mainAudioSource.isPlaying)
+                game.mainAudioSource.Stop();
 
             if (initializeTimer >= initializeDuration)
             {
@@ -169,8 +171,8 @@ public class GameState : State
 
                 initialized = true;
                 running = true;
-                game.audioSource.clip = game.sounds.gameMusic;
-                game.audioSource.Play();
+                game.mainAudioSource.clip = game.sounds.gameMusic;
+                game.mainAudioSource.Play();
             }
         }
         else
@@ -183,24 +185,42 @@ public class GameState : State
                     speed = boostSpeed;
                     game.speedValue.text = ">>>";
                     game.speedHighlight.SetActive(true);
+                    game.secondAudioSource.pitch = 1.075f;
                 }
                 else
                 {
                     speed = baseSpeed;
                     game.speedValue.text = ">";
                     game.speedHighlight.SetActive(false);
+                    game.secondAudioSource.pitch = 1.0f;
                 }
 
-                colorIndex = 0;
+                int newColorIndex = 0;
 
                 if (Input.GetKey(KeyCode.Q))
-                    colorIndex = 1;
+                    newColorIndex = 1;
                 else if (Input.GetKey(KeyCode.W))
-                    colorIndex = 2;
+                    newColorIndex = 2;
                 else if (Input.GetKey(KeyCode.E))
-                    colorIndex = 3;
+                    newColorIndex = 3;
                 else if (Input.GetKey(KeyCode.R))
-                    colorIndex = 4;
+                    newColorIndex = 4;
+
+                if (newColorIndex != colorIndex)
+                {
+                    if (newColorIndex > 0)
+                    {
+                        if (!game.secondAudioSource.isPlaying)
+                        {
+                            game.secondAudioSource.loop = true;
+                            game.secondAudioSource.Play();
+                        }
+                    }
+                    else
+                        game.secondAudioSource.loop = false;
+
+                    colorIndex = newColorIndex;
+                }
 
                 if (colorIndex > 0)
                 {
@@ -266,7 +286,7 @@ public class GameState : State
             {
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
                 {
-                    game.audioSource.Stop();
+                    game.mainAudioSource.Stop();
                     game.lastScore = accuracy;
                     game.SwitchToState(new LevelSelectState(game));
                     return;
@@ -294,19 +314,21 @@ public class GameState : State
 
     private void GameOver()
     {
-        game.audioSource.Stop();
-        game.audioSource.loop = false;
+        game.mainAudioSource.Stop();
+        game.mainAudioSource.loop = false;
+        game.secondAudioSource.Stop();
+        game.secondAudioSource.loop = false;
 
         if (accuracy == 0)
         {
-            game.audioSource.clip = game.sounds.levelFailed;
+            game.mainAudioSource.clip = game.sounds.levelFailed;
         }
         else
         {
-            game.audioSource.clip = game.sounds.levelComplete;
+            game.mainAudioSource.clip = game.sounds.levelComplete;
         }
 
-        game.audioSource.Play();
+        game.mainAudioSource.Play();
 
         running = false;
         game.guideLine.enabled = false;
