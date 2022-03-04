@@ -21,7 +21,7 @@ public class StartState : State
         cameraSizeGame = 10.0f;
 
         transitionTimer = 0f;
-        transitionDuration = 1.0f;
+        transitionDuration = 5.0f;
     }
 
     public override void UpdateState()

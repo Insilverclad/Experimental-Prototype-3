@@ -333,6 +333,8 @@ public class GameState : State
         running = false;
         game.guideLine.enabled = false;
         game.guideBox.enabled = false;
+        
+        gridLineObject.SetActive(false);
     }
 
     private LineRenderer CreateGridLineObject(Material mat)
